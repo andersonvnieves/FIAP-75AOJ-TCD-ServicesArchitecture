@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShippingCostCalculator.DTO;
+using ShippingCostCalculator.Persistence.Repositories;
 
 namespace ShippingCostCalculator.Controllers
 {
@@ -11,17 +13,31 @@ namespace ShippingCostCalculator.Controllers
     [ApiController]
     public class ShippingController : ControllerBase
     {
+        private readonly ShippingCompanyRepository _shippingCompanyRepository;
 
-        public ShippingController()
+        public ShippingController(ShippingCompanyRepository shippingCompanyRepository)
         {
-                
+            _shippingCompanyRepository = shippingCompanyRepository;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("GetEstimateShippingCost")]
-        public IActionResult Get()
+        public IActionResult Post([FromBody] DeliveryInformationDTO delivery)
         {
-            return Ok("Free Shipping");
+            var rnd = new Random();
+            var result = new List<EstimateShippingCostDTO>();
+
+            foreach (var shippingCompany in _shippingCompanyRepository.List())
+            {
+             result.Add(new EstimateShippingCostDTO()
+             {
+                 ShipingCompanyName = shippingCompany.ShippingCompanyName,
+                 ShippingIn = DateTime.Now.AddDays(rnd.Next(1,6)),
+                 Price = $"R${rnd.Next(6,60)},{rnd.Next(0,99)}"
+             });   
+            }
+
+            return Ok(result);
         }
     }
 }

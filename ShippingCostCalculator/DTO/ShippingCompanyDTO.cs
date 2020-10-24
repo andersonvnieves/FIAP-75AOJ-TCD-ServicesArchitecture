@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 
-namespace ShippingCostCalculator.Model
+namespace ShippingCostCalculator.DTO
 {
-    public class ShippingCompany
+    public class ShippingCompanyDTO
     {
-        public Guid ShippingCompanyId { get; set; }
         public string ShippingCompanyName { get; set; }
     }
 }

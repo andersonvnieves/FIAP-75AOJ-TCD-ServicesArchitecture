@@ -36,7 +36,7 @@ namespace OrderService
             {
                 setupAction.SwaggerDoc("OrderServiceAPI", new OpenApiInfo()
                 {
-                    Title = "Product Service API",
+                    Title = "Order Service API",
                     Version = "1.0.0",
                 });
             });
