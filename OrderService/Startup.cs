@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using OrderService.Persistence;
 using OrderService.Persistence.Repositories;
+using OrderService.Queue;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace OrderService
@@ -30,7 +32,7 @@ namespace OrderService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<OrderDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContextPool<OrderDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddSwaggerGen(setupAction =>
             {
@@ -42,11 +44,22 @@ namespace OrderService
             });
 
             services.AddControllers();
+            services.AddSingleton<OrderItemsRepository>();
+            services.AddSingleton<OrderRepository>();
+            services.AddSingleton<OrderStatusRepository>();
+            services.AddSingleton<ShippingAddressRepository>();
 
-            services.AddScoped<OrderItemsRepository>();
-            services.AddScoped<OrderRepository>();
-            services.AddScoped<OrderStatusRepository>();
-            services.AddScoped<ShippingAddressRepository>();
+            services.AddSingleton<ITopicClient>(x => new TopicClient(Configuration.GetValue<string>("ServiceBus:ConnectionString"),
+                Configuration.GetValue<string>("ServiceBus:TopicName")));
+            services.AddSingleton<OrderMessagePublisher>();
+
+            services.AddSingleton<ISubscriptionClient>(x =>
+                new SubscriptionClient(Configuration.GetValue<string>("ServiceBus:TopicName"),
+                    Configuration.GetValue<string>("ServiceBus:TopicName"),
+                    Configuration.GetValue<string>("ServiceBus:SubscriptionName")));
+            services.AddHostedService<OrderConsumerService>();
+
+            
 
         }
 

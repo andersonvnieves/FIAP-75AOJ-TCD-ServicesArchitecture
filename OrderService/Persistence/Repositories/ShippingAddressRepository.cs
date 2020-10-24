@@ -18,6 +18,14 @@ namespace OrderService.Persistence.Repositories
             _dbSet = _context.Set<ShippingAddress>();
         }
 
+        public ShippingAddress Insert(ShippingAddress entity)
+        {
+            entity.ShippingAddressId = Guid.NewGuid();
+            _dbSet.Add(entity);
+            _context.SaveChanges();
+            return entity;
+
+        }
 
 
         private void Save()

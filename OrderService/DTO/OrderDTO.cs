@@ -9,6 +9,9 @@ namespace OrderService.DTO
     {
         public Guid UserId { get; set; }
 
+
+        public Guid OrderStatusId { get; set; }
+
         public ICollection<OrderItemsDTO> OrderItems { get; set; }
 
         public string ShippingStreet { get; set; }

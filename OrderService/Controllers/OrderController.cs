@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Razor;
 using OrderService.DTO;
 using OrderService.Model;
+using OrderService.Persistence.Repositories;
+using OrderService.Queue;
 
 namespace OrderService.Controllers
 {
@@ -13,23 +17,26 @@ namespace OrderService.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
+        private readonly OrderMessagePublisher _orderMessagePublisher;
+        private readonly OrderRepository _orderRepository;
 
-        public OrderController()
+        public OrderController(OrderMessagePublisher orderMessagePublisher, OrderRepository orderRepository)
         {
-            
+            _orderMessagePublisher = orderMessagePublisher;
+            _orderRepository = orderRepository;
         }
 
         [HttpGet]
         public IActionResult Get(Guid orderId)
         {
-            return Ok();
+            return Ok(_orderRepository.GetById(orderId));
         }
 
         [HttpPost]
         public IActionResult Post(OrderDTO order)
         {
-            
-            return Created("", new Order());
+            _orderMessagePublisher.Publish(JsonSerializer.Serialize(order));
+            return Ok();
         }
 
         [HttpGet]

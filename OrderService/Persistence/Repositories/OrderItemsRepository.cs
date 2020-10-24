@@ -18,6 +18,15 @@ namespace OrderService.Persistence.Repositories
             _dbSet = _context.Set<OrderItems>();
         }
 
+        public OrderItems Insert(OrderItems entity)
+        {
+            entity.OrderItemsId = Guid.NewGuid();
+            _dbSet.Add(entity);
+            _context.SaveChanges();
+            return entity;
+
+        }
+
         private void Save()
         {
             _context.SaveChanges();
