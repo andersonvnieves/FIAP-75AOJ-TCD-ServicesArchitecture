@@ -32,6 +32,11 @@ namespace OrderService.Persistence.Repositories
             return entity;
         }
 
+        public ICollection<OrderStatus> List()
+        {
+            return _dbSet.ToList();
+        }
+
         public OrderStatus GetStatusById(Guid statusId)
         {
             return _dbSet.Where(c => c.OrderStatusId.Equals(statusId)).FirstOrDefault();

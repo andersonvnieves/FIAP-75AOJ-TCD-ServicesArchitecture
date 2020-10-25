@@ -23,6 +23,11 @@ namespace OrderService.Persistence.Repositories
             return _dbSet.Where(c => c.OrderId == orderId).FirstOrDefault();
         }
 
+        public Order GetStatusByOrderId(Guid orderId)
+        {
+            return _dbSet.Include(i => i.OrderStatus).Where(c => c.OrderId == orderId).FirstOrDefault();
+        }
+
         public Order Insert(Order entity)
         {
             entity.OrderId = Guid.NewGuid();

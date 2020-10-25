@@ -44,17 +44,17 @@ namespace OrderService
             });
 
             services.AddControllers();
-            services.AddSingleton<OrderItemsRepository>();
-            services.AddSingleton<OrderRepository>();
-            services.AddSingleton<OrderStatusRepository>();
-            services.AddSingleton<ShippingAddressRepository>();
+            services.AddScoped<OrderItemsRepository>();
+            services.AddScoped<OrderRepository>();
+            services.AddScoped<OrderStatusRepository>();
+            services.AddScoped<ShippingAddressRepository>();
 
             services.AddSingleton<ITopicClient>(x => new TopicClient(Configuration.GetValue<string>("ServiceBus:ConnectionString"),
                 Configuration.GetValue<string>("ServiceBus:TopicName")));
             services.AddSingleton<OrderMessagePublisher>();
 
             services.AddSingleton<ISubscriptionClient>(x =>
-                new SubscriptionClient(Configuration.GetValue<string>("ServiceBus:TopicName"),
+                new SubscriptionClient(Configuration.GetValue<string>("ServiceBus:ConnectionString"),
                     Configuration.GetValue<string>("ServiceBus:TopicName"),
                     Configuration.GetValue<string>("ServiceBus:SubscriptionName")));
             services.AddHostedService<OrderConsumerService>();

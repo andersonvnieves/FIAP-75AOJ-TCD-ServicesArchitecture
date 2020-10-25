@@ -43,7 +43,7 @@ namespace OrderService.Controllers
         [Route("GetStatusByOrderId")]
         public IActionResult GetStatusByOrderId(Guid orderId)
         {
-            return Ok();
+            return Ok(_orderRepository.GetStatusByOrderId(orderId).OrderStatus);
         }
     }
 }
